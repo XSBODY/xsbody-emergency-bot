@@ -41,9 +41,8 @@ def handle_menu(message):
     else:
         bot.send_message(message.chat.id, "Не понял, выбери из меню.")
 
-# Установка webhook и запуск
-if __name__ == "__main__":
+# Установка webhook — работает даже при запуске через gunicorn
+with app.app_context():
     bot.remove_webhook()
     time.sleep(2)
     bot.set_webhook(url=f"https://xsbody-emergency-bot.onrender.com/{TOKEN}")
-    app.run(host="0.0.0.0", port=8080)
