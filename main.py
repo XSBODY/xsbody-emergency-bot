@@ -45,5 +45,5 @@ def handle_menu(message):
 if __name__ == "__main__":
     bot.remove_webhook()
     time.sleep(2)
-    bot.set_webhook(url=f"https://xsbody-emergney-bot.onrender.com/{TOKEN}")
+    bot.set_webhook(url=f"https://xsbody-emergency-bot.onrender.com/{TOKEN}")
     app.run(host="0.0.0.0", port=8080)
