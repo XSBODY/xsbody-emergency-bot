@@ -3,31 +3,30 @@ from flask import Flask, request
 import time
 import os
 
-# Получаем токен из переменных окружения на Render
+# Получаем токен
 TOKEN = os.getenv("TOKEN")
 bot = telebot.TeleBot(TOKEN)
 app = Flask(__name__)
 
-# Проверка — жив ли бот
 @app.route('/')
 def index():
     return "Бот работает!", 200
 
-# Обработка входящих запросов от Telegram
-@app.route(f'/{TOKEN}', methods=['POST'])
+# Webhook без токена в URL!
+@app.route('/webhook', methods=['POST'])
 def webhook():
     update = telebot.types.Update.de_json(request.stream.read().decode("utf-8"))
     bot.process_new_updates([update])
     return "ok", 200
 
-# Ответ на команды /start и /menu
+# Команды
 @bot.message_handler(commands=['start', 'menu'])
 def send_welcome(message):
     markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
     markup.add("📋 Этапы запуска", "👩‍💼 Контакты УК", "📎 Полезные ссылки", "💬 Поддержка")
     bot.send_message(message.chat.id, "Привет! Я emergency‑куратор.", reply_markup=markup)
 
-# Обработка кнопок меню
+# Меню
 @bot.message_handler(func=lambda m: True)
 def handle_menu(message):
     if message.text == "📋 Этапы запуска":
@@ -41,8 +40,8 @@ def handle_menu(message):
     else:
         bot.send_message(message.chat.id, "Не понял, выбери из меню.")
 
-# Установка webhook — работает даже при запуске через gunicorn
+# Установка webhook — теперь правильно
 with app.app_context():
     bot.remove_webhook()
     time.sleep(2)
-    bot.set_webhook(url=f"https://xsbody-emergency-bot.onrender.com/{TOKEN}")
+    bot.set_webhook(url="https://xsbody-emergency-bot.onrender.com/webhook")
