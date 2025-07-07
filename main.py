@@ -3,12 +3,12 @@ from flask import Flask, request
 import time
 import os
 
-# Получаем токен из переменных окружения (он будет задан на Render)
+# Получаем токен из переменных окружения на Render
 TOKEN = os.getenv("TOKEN")
 bot = telebot.TeleBot(TOKEN)
 app = Flask(__name__)
 
-# Роут для проверки доступности
+# Проверка — жив ли бот
 @app.route('/')
 def index():
     return "Бот работает!", 200
@@ -20,14 +20,14 @@ def webhook():
     bot.process_new_updates([update])
     return "ok", 200
 
-# Обработка команды /start и /menu
+# Ответ на команды /start и /menu
 @bot.message_handler(commands=['start', 'menu'])
 def send_welcome(message):
     markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
     markup.add("📋 Этапы запуска", "👩‍💼 Контакты УК", "📎 Полезные ссылки", "💬 Поддержка")
     bot.send_message(message.chat.id, "Привет! Я emergency‑куратор.", reply_markup=markup)
 
-# Обработка кнопок
+# Обработка кнопок меню
 @bot.message_handler(func=lambda m: True)
 def handle_menu(message):
     if message.text == "📋 Этапы запуска":
@@ -41,9 +41,9 @@ def handle_menu(message):
     else:
         bot.send_message(message.chat.id, "Не понял, выбери из меню.")
 
-# Запуск + установка webhook
+# Установка webhook и запуск
 if __name__ == "__main__":
     bot.remove_webhook()
     time.sleep(2)
-    bot.set_webhook(url=f"https://xsbody-emergency-bot.onrender.com/{TOKEN}")
+    bot.set_webhook(url=f"https://xsbody-emergney-bot.onrender.com/{TOKEN}")
     app.run(host="0.0.0.0", port=8080)
